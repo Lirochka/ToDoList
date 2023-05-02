@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">ToDoList</string>
+    <string name="add_item">Add Item</string>
+    <string name="title_will_be_here">Title will be here</string>
+    <string name="description_will_be_here">Description will be here</string>
+    <string name="number_will_be_here">Number will be here</string>
+    <string name="ok">OK</string>
+    <string name="cancel">CANCEL</string>
+</resources>
