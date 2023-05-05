@@ -8,6 +8,8 @@ import android.view.View.VISIBLE
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.room.Room
+import com.example.todolist.room.AppDatabase
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
@@ -16,6 +18,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var fab: FloatingActionButton
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: CustomAdapter
+    private lateinit var db: AppDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,11 +57,18 @@ class MainActivity : AppCompatActivity() {
         adapter = CustomAdapter(data)
         recyclerView.adapter = adapter
         Log.d("MyLog", "onCreated been finished")
+
+        db = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java, "database-name"
+        ).allowMainThreadQueries().build()
     }
 
     fun addItem(item: ToDoItem) {
         stubContainer.visibility = INVISIBLE
         recyclerView.visibility = VISIBLE
-         adapter.addItem(item)
+        //adapter.addItem(item)
+        //вызов db
+        db.toDoDao().insertItem(item)
     }
 }
