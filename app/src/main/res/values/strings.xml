@@ -6,4 +6,6 @@
     <string name="number_will_be_here">Number will be here</string>
     <string name="ok">OK</string>
     <string name="cancel">CANCEL</string>
+    <string name="update_item">Update Item</string>
+    <string name="preference_file_key">preference_file_key</string>
 </resources>
