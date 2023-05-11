@@ -7,7 +7,7 @@ import com.example.todolist.ToDoItem
 @Dao
 interface ToDoDao {
     @Query ("SELECT * FROM todoitem") //достать и показать
-    fun getAll(): LiveData<List<ToDoItem>>
+    fun getAll(): List<ToDoItem>
 
     @Insert
     fun insertItem(toDoItem: ToDoItem)
