@@ -3,17 +3,17 @@ package com.example.todolist.data
 import android.content.Context
 import androidx.room.Room
 import com.example.todolist.RoomManager
-import com.example.todolist.ToDoItem
+import com.example.todolist.model.ToDoItem
 import com.example.todolist.room.AppDatabase
 
 
 /**
- * Use to manage work with room
+ * Manage that handles logic with room data base
  */
 class RoomManagerImpl(private val context: Context) : RoomManager {
     private var db = Room.databaseBuilder(
         context,
-        AppDatabase::class.java, "database-name"
+        AppDatabase::class.java, DATABASE_NAME
     )
         .allowMainThreadQueries()
         .fallbackToDestructiveMigration()
@@ -33,5 +33,9 @@ class RoomManagerImpl(private val context: Context) : RoomManager {
 
     override fun deleteItem(item: ToDoItem) {
         db.toDoDao().deleteItem(item)
+    }
+
+    companion object {
+        private const val DATABASE_NAME = "database-name"
     }
 }

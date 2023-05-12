@@ -1,10 +1,7 @@
-package com.example.todolist
+package com.example.todolist.presentation
 
 import android.app.ActionBar
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.view.WindowManager.LayoutParams
 import android.widget.Button
@@ -12,14 +9,24 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
+import com.example.todolist.R
+import com.example.todolist.data.PrefsManagerImpl.Companion.PREFS_DESCRIPTION_KEY
+import com.example.todolist.data.PrefsManagerImpl.Companion.PREFS_NUMBER_KEY
+import com.example.todolist.data.PrefsManagerImpl.Companion.PREFS_TITLE_KEY
+import com.example.todolist.domain.CustomDialogViewModel
+import com.example.todolist.domain.MainViewModel
+import com.example.todolist.model.ToDoItem
 
 class CustomDialog(
-    var activity: MainActivity,
+  //  var activity: MainActivity,
     private val isNewItem: Boolean,
     private val item: ToDoItem?,
 ) : DialogFragment(), View.OnClickListener {
 
-    private val mCustomDialogViewModel: CustomDialogViewModel by activityViewModels()
+    private val customDialogViewModel: CustomDialogViewModel by activityViewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
+
 
     private lateinit var okButton: Button
     private lateinit var cancelButton: Button
@@ -28,7 +35,6 @@ class CustomDialog(
     private lateinit var inputFieldDescription: EditText
     private lateinit var inputFieldNumber: EditText
     private lateinit var dialogLabel: TextView
-    private lateinit var sharedPref: SharedPreferences
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,11 +53,21 @@ class CustomDialog(
         }
         return view
     }
-
     override fun onResume() {
         super.onResume()
         dialogSizeControl()
+        observe()
     }
+    private fun observe() {
+        customDialogViewModel.toDoItemResult.observe(this, Observer {
+            if (isNewItem) {
+                inputFieldTitle.setText(it.title)
+                inputFieldDescription.setText(it.description)
+                inputFieldNumber.setText(it.number)
+            }
+        })
+    }
+
     private fun initViews(view: View) {
         inputFieldTitle = view.findViewById(R.id.dialog_input_title)
         inputFieldDescription = view.findViewById(R.id.dialog_input_description)
@@ -64,7 +80,6 @@ class CustomDialog(
         cancelButton.setOnClickListener(this)
     }
     private fun updateExistingItem() {
-        Log.d("testLog", "updateExistingItem")
         dialogLabel.text = context?.getString(R.string.update_item)
         inputFieldTitle.setText(item?.title)
         inputFieldDescription.setText(item?.description)
@@ -72,15 +87,7 @@ class CustomDialog(
     }
 
     private fun createNewItem() {
-        val sharedPref = activity.getPreferences(Context.MODE_PRIVATE)
-
-        val titleFromPref = sharedPref.getString("titleKey", "")
-        val descriptionFromPref = sharedPref.getString("descriptionKey", "")
-        val numberFromPref = sharedPref.getString("numberKey", "")
-
-        inputFieldTitle.setText(titleFromPref)
-        inputFieldDescription.setText(descriptionFromPref)
-        inputFieldNumber.setText(numberFromPref)
+        customDialogViewModel.getToDoItemFromPrefs()
     }
 
     private fun dialogSizeControl() {
@@ -117,18 +124,16 @@ class CustomDialog(
     private fun okUpdateItemBeenClicked() {
         val inputResultTitle = inputFieldTitle.text.toString()
         val inputResultDescription = inputFieldDescription.text.toString()
-        val inputResultNumber = inputFieldNumber.text.toString().toInt()
+        val inputResultNumber = inputFieldNumber.text.toString()
         item?.id?.let { ToDoItem(it, inputResultTitle, inputResultDescription, inputResultNumber) }
-            ?.let { activity.updateItem(it) }
+            ?.let { mainViewModel.updateItem(it) }
     }
 
     private fun okNewItemBeenClicked() {
-        //№2 Отправляем данные в БД
-        //2.1 Вытаскиваем данные из полей ввода
         val inputResultTitle = inputFieldTitle.text.toString()
         val inputResultDescription = inputFieldDescription.text.toString()
-        val inputResultNumber = inputFieldNumber.text.toString().toInt()
-        activity.addItem(ToDoItem(0, inputResultTitle, inputResultDescription, inputResultNumber))
+        val inputResultNumber = inputFieldNumber.text.toString()
+        mainViewModel.insertItem(ToDoItem(0, inputResultTitle, inputResultDescription, inputResultNumber))
 
         inputFieldTitle.text.clear()
         inputFieldDescription.text.clear()
@@ -137,19 +142,13 @@ class CustomDialog(
     override fun onStop() {
         super.onStop()
         if (isNewItem) {
-            sharedPref = activity?.getPreferences(Context.MODE_PRIVATE) ?: return
-            with(sharedPref.edit()) {
-                val inputTitleResult = inputFieldTitle.text.toString()
-                val inputTitleDescription = inputFieldDescription.text.toString()
-                val inputTitleNumber = inputFieldNumber.text.toString()
-
-                putString("numberKey", inputTitleNumber)
-                putString("titleKey", inputTitleResult)
-                putString("descriptionKey", inputTitleDescription)
-                apply()
-            }
+            val inputTitleResult = inputFieldTitle.text.toString()
+            val inputDescriptionResult = inputFieldDescription.text.toString()
+            val inputNumberResult = inputFieldNumber.text.toString()
+            customDialogViewModel.saveDataInPrefs(PREFS_TITLE_KEY, inputTitleResult)
+            customDialogViewModel.saveDataInPrefs(PREFS_DESCRIPTION_KEY, inputDescriptionResult)
+            customDialogViewModel.saveDataInPrefs(PREFS_NUMBER_KEY, inputNumberResult)
         }
-
     }
 }
 

@@ -1,5 +1,7 @@
 package com.example.todolist
 
+import com.example.todolist.model.ToDoItem
+
 interface RoomManager {
 
     fun getAll() : List<ToDoItem>

@@ -1,12 +1,11 @@
 package com.example.todolist.room
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
-import com.example.todolist.ToDoItem
+import com.example.todolist.model.ToDoItem
 
 @Dao
 interface ToDoDao {
-    @Query ("SELECT * FROM todoitem") //достать и показать
+    @Query ("SELECT * FROM todoitem")
     fun getAll(): List<ToDoItem>
 
     @Insert
