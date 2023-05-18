@@ -37,7 +37,6 @@ class CustomAdapter(
         val number: TextView = itemView.findViewById(R.id.item_recycler_number)
         val container: ConstraintLayout = itemView.findViewById(R.id.item_recycler_container)
     }
-
     fun updateList(updatedList: List<ToDoItem>) {
         mList = updatedList.toMutableList()
         notifyDataSetChanged()

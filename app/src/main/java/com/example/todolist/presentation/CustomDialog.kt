@@ -2,7 +2,9 @@ package com.example.todolist.presentation
 
 import android.app.ActionBar
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.WindowManager.LayoutParams
 import android.widget.Button
 import android.widget.EditText
@@ -11,22 +13,22 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.example.todolist.R
-import com.example.todolist.data.PrefsManagerImpl.Companion.PREFS_DESCRIPTION_KEY
-import com.example.todolist.data.PrefsManagerImpl.Companion.PREFS_NUMBER_KEY
-import com.example.todolist.data.PrefsManagerImpl.Companion.PREFS_TITLE_KEY
+import com.example.todolist.data.PrefsRepositoryImpl.Companion.PREFS_DESCRIPTION_KEY
+import com.example.todolist.data.PrefsRepositoryImpl.Companion.PREFS_NUMBER_KEY
+import com.example.todolist.data.PrefsRepositoryImpl.Companion.PREFS_TITLE_KEY
 import com.example.todolist.domain.CustomDialogViewModel
 import com.example.todolist.domain.MainViewModel
 import com.example.todolist.model.ToDoItem
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class CustomDialog(
-  //  var activity: MainActivity,
     private val isNewItem: Boolean,
     private val item: ToDoItem?,
 ) : DialogFragment(), View.OnClickListener {
 
     private val customDialogViewModel: CustomDialogViewModel by activityViewModels()
     private val mainViewModel: MainViewModel by activityViewModels()
-
 
     private lateinit var okButton: Button
     private lateinit var cancelButton: Button
@@ -35,7 +37,6 @@ class CustomDialog(
     private lateinit var inputFieldDescription: EditText
     private lateinit var inputFieldNumber: EditText
     private lateinit var dialogLabel: TextView
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -67,7 +68,6 @@ class CustomDialog(
             }
         })
     }
-
     private fun initViews(view: View) {
         inputFieldTitle = view.findViewById(R.id.dialog_input_title)
         inputFieldDescription = view.findViewById(R.id.dialog_input_description)
@@ -89,7 +89,6 @@ class CustomDialog(
     private fun createNewItem() {
         customDialogViewModel.getToDoItemFromPrefs()
     }
-
     private fun dialogSizeControl() {
         val params: ViewGroup.LayoutParams = dialog!!.window!!.attributes
         params.width = ActionBar.LayoutParams.MATCH_PARENT
@@ -107,11 +106,9 @@ class CustomDialog(
             }
         }
     }
-
     private fun elseBeenClicked() {
         TODO("Not yet implemented")
     }
-
     private fun okButtonClicker() {
         if (isNewItem) {
             okNewItemBeenClicked()
@@ -120,7 +117,6 @@ class CustomDialog(
         }
         dismiss()
     }
-
     private fun okUpdateItemBeenClicked() {
         val inputResultTitle = inputFieldTitle.text.toString()
         val inputResultDescription = inputFieldDescription.text.toString()
@@ -128,7 +124,6 @@ class CustomDialog(
         item?.id?.let { ToDoItem(it, inputResultTitle, inputResultDescription, inputResultNumber) }
             ?.let { mainViewModel.updateItem(it) }
     }
-
     private fun okNewItemBeenClicked() {
         val inputResultTitle = inputFieldTitle.text.toString()
         val inputResultDescription = inputFieldDescription.text.toString()

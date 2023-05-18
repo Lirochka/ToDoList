@@ -1,8 +1,7 @@
 package com.example.todolist
 
 import com.example.todolist.model.ToDoItem
-
-interface PrefsManager {
+interface PrefsRepository {
     /**
      * Return todo item from prefs
      */

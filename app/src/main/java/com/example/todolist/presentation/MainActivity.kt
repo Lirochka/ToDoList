@@ -1,6 +1,10 @@
 package com.example.todolist.presentation
 
-import android.graphics.*
+
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffXfermode
 import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -20,6 +24,9 @@ import com.example.todolist.domain.MainViewModel
 import com.example.todolist.model.ToDoItem
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(), OnItemClick {
 
     private val mainViewModel: MainViewModel by viewModels()

@@ -1,16 +1,17 @@
 package com.example.todolist.domain
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.todolist.RoomManager
+import androidx.lifecycle.ViewModel
+import com.example.todolist.RoomRepository
 import com.example.todolist.model.ToDoItem
-import com.example.todolist.data.RoomManagerImpl
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class MainViewModel(app: Application): AndroidViewModel(app) {
-
-    private val roomManager: RoomManager = RoomManagerImpl(app)
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    private val roomRepository: RoomRepository
+): ViewModel() {
 
     private var todoItemList: MutableLiveData<List<ToDoItem>> = MutableLiveData()
     val toDoItemListResult: LiveData<List<ToDoItem>> = todoItemList
@@ -19,7 +20,7 @@ class MainViewModel(app: Application): AndroidViewModel(app) {
      * Provides all data from room
      */
     fun getAllData() {
-       val result = roomManager.getAll()
+       val result = roomRepository.getAll()
         todoItemList.postValue(result)
     }
 
@@ -30,7 +31,7 @@ class MainViewModel(app: Application): AndroidViewModel(app) {
     fun insertItem(item: ToDoItem) {
         todoItemList.value.let {
             todoItemList.postValue(it?.plus(item))
-            roomManager.insertItem(item)
+            roomRepository.insertItem(item)
         }
     }
 
@@ -46,6 +47,7 @@ class MainViewModel(app: Application): AndroidViewModel(app) {
             list?.set(it, item) //Updating the item
             todoItemList.value= list!! //Post the final list to live data
         }
+        roomRepository.updateItem(item)
     }
 
     /**
@@ -55,7 +57,7 @@ class MainViewModel(app: Application): AndroidViewModel(app) {
     fun deleteItem(item: ToDoItem) {
         todoItemList.value.let {
             todoItemList.postValue(it?.minus(item))
-            roomManager.deleteItem(item)
+            roomRepository.deleteItem(item)
         }
     }
 }

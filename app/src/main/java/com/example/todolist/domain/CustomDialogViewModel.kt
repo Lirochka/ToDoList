@@ -1,24 +1,26 @@
 package com.example.todolist.domain
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.todolist.PrefsManager
+import androidx.lifecycle.ViewModel
+import com.example.todolist.PrefsRepository
 import com.example.todolist.model.ToDoItem
-import com.example.todolist.data.PrefsManagerImpl
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class CustomDialogViewModel(app: Application): AndroidViewModel(app) {
-    private val prefsManager: PrefsManager = PrefsManagerImpl(app)
+@HiltViewModel
+class CustomDialogViewModel @Inject constructor(
+    private val prefsRepository: PrefsRepository,
+) : ViewModel() {
 
     private var todoItem: MutableLiveData<ToDoItem> = MutableLiveData()
-    val toDoItemResult: LiveData<ToDoItem> = todoItem
+    val   toDoItemResult: LiveData<ToDoItem> = todoItem
 
     /**
      * Provides preferences value for ToDo item
      */
     fun getToDoItemFromPrefs() {
-       val result = prefsManager.getTodoItem()
+        val result = prefsRepository.getTodoItem()
         todoItem.postValue(result)
     }
 
@@ -28,6 +30,6 @@ class CustomDialogViewModel(app: Application): AndroidViewModel(app) {
      * @param value - provide data that need to be saved in prefs
      */
     fun saveDataInPrefs(key: String, value: String) {
-        prefsManager.saveDataInPrefs(key, value)
+        prefsRepository.saveDataInPrefs(key, value)
     }
 }
